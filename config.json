@@ -1,0 +1,22 @@
+{
+  "name": "StellarCyber Scripts Pro",
+  "description": "Bunch of scripts to help out with CS",
+  "version": "1.0.0",
+  "options": [
+    {
+      "name": "Option 1",
+      "description": "What does this tool do",
+      "gist_URL": "URL_here"
+    },
+    {
+      "name": "Option 2",
+      "description": "Description of Option 2",
+      "gist_URL": "URL_here"
+    },
+    {
+      "name": "Option 3",
+      "description": "Description of Option 3",
+      "gist_URL": "URL_here"
+    }
+  ]
+}
