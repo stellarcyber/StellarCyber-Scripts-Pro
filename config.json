@@ -4,19 +4,14 @@
   "version": "1.0.0",
   "options": [
     {
-      "name": "Option 1",
-      "description": "What does this tool do",
-      "gist_URL": "URL_here"
+      "name": "Addition",
+      "description": "Add 2 numbers together",
+      "gist_URL": "https://gist.githubusercontent.com/ash14545/b058ac710ba5216d32daba2ae38fde63/raw/784cd5b43034717d8b5eb0967b2073d01278129f/option1.sh"
     },
     {
-      "name": "Option 2",
-      "description": "Description of Option 2",
-      "gist_URL": "URL_here"
-    },
-    {
-      "name": "Option 3",
-      "description": "Description of Option 3",
-      "gist_URL": "URL_here"
+      "name": "Subtraction",
+      "description": "Subtract 2 numbers",
+      "gist_URL": "https://gist.githubusercontent.com/ash14545/b058ac710ba5216d32daba2ae38fde63/raw/9f1fe0c55bb147abd7fe30303519079c64b327b0/option2.sh"
     }
   ]
 }
