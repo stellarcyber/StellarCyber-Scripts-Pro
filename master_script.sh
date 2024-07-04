@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# TODO: implement dependency check for jq
+
+# TODO: implement version check and prompt user to install latest version. if on latest version, display version number under title
+
 # Define the TITLE variable with your ASCII art
 TITLE=$'\033[1;33m╭━━━╮╭╮\033[0m╱╱╱\033[1;33m╭╮╭╮\033[0m╱╱╱╱╱╱\033[1;37m╭━━━╮\033[0m╱╱╱\033[1;37m╭╮//////
 \033[1;33m┃╭━╮┣╯╰╮\033[0m╱╱\033[1;33m┃┃┃┃\033[0m╱╱╱╱╱╱\033[1;37m┃╭━╮┃\033[0m╱╱╱\033[1;37m┃┃/////////
