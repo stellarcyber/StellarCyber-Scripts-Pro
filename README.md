@@ -16,7 +16,7 @@ StellarCyber-Scripts-Pro is a CLI-based menu interface with dynamic options load
 
 ## Requirements
 
-Please ensure that you are running in a Linux environment. Windows users must use [Git Bash](https://git-scm.com/) CLI.
+Please ensure that you are running in a **Linux environment**. Windows users can use the [Git Bash](https://git-scm.com/) CLI.
 
 * `jq`: Required for parsing `config.json` and other json files and responses.
 * `curl`: Required for downloading scripts from URLs.
