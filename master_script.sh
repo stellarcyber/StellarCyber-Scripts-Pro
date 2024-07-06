@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# TODO: implement dependency check for jq
-
-# TODO: implement version check and prompt user to install latest version. if on latest version, display version number under title
-
-# Define the TITLE variable with your ASCII art
+# ASCII title art
 TITLE=$'\033[1;33m╭━━━╮╭╮\033[0m╱╱╱\033[1;33m╭╮╭╮\033[0m╱╱╱╱╱╱\033[1;37m╭━━━╮\033[0m╱╱╱\033[1;37m╭╮//////
 \033[1;33m┃╭━╮┣╯╰╮\033[0m╱╱\033[1;33m┃┃┃┃\033[0m╱╱╱╱╱╱\033[1;37m┃╭━╮┃\033[0m╱╱╱\033[1;37m┃┃/////////
 \033[1;33m┃╰━━╋╮╭╋━━┫┃┃┃╭━━┳━╮\033[1;37m┃┃\033[0m╱\033[1;37m╰╋╮\033[0m╱\033[1;37m╭┃╰━┳━━┳━┓/////////
@@ -14,6 +10,49 @@ TITLE=$'\033[1;33m╭━━━╮╭╮\033[0m╱╱╱\033[1;33m╭╮╭╮\03
 \033[0m//╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱\033[1;37m╭━╯┃\033[0m///////
    ╱╱╱╱╱╱/╱╱╱╱╱╱╱╱╱╱╱╱╱\033[1;37m╰━━╯\033[0m//
 '
+
+# Check if jq is installed, if not, prompt to install
+if ! command -v jq &>/dev/null; then
+  clear
+  echo -e "$TITLE"
+
+  read -p "jq is a required dependency that is currently not installed on your machine. Would you like to install it? (y/n): " choice
+  if [ "$choice" == "y" ]; then
+    case "$(uname -s)" in
+      Linux)
+        sudo apt-get update
+        if [ $? -ne 0 ]; then
+          echo "Failed to update package list. Please check your network connection and try again."
+          exit 1
+        fi
+        sudo apt-get install -y jq
+        if [ $? -ne 0 ]; then
+          echo "Failed to install jq. Please try installing jq manually."
+          exit 1
+        fi
+        ;;
+      Darwin)
+        brew install jq
+        if [ $? -ne 0 ]; then
+          echo "Failed to install jq using Homebrew. Please try installing jq manually."
+          exit 1
+        fi
+        ;;
+      *)
+        echo "Unsupported OS. The script only supports Linux and Darwin environments. Please install jq manually from https://jqlang.github.io/jq/."
+        echo "For Windows environments, use 'winget install jqlang.jq' to install jq."
+        exit 1
+        ;;
+    esac
+  else
+    echo "jq is not installed. Please install jq before running the script. This script will now exit."
+    exit 1
+  fi
+fi
+
+
+# TODO: implement version check and prompt user to install latest version. if on latest version, display version number under title
+
 config_file="config.json"
 
 # ANSI color codes using tput
@@ -85,7 +124,7 @@ display_menu() {
 
     # Proceed to download script
     if ! curl -s -f -L "$url" -o "$script_path"; then
-      echo "Error: Failed to download script '$option_name' from $url. Please ensure the URL is valid" >&2
+      echo "Error: Failed to download script '$option_name' from $url. Please ensure the URL is valid." >&2
       exit 1
     else
       chmod +x "$script_path"
@@ -150,7 +189,7 @@ display_menu() {
 
             read -n1 -r -p "Press any key to return to menu..."
           elif [[ $selected_suboption == "No" ]]; then
-            echo "Clean up canceled. Returning to menu"
+            echo "Clean up canceled. Returning to menu."
             read -n1 -r -p "Press any key to return to menu..."
             break
           fi
@@ -170,7 +209,7 @@ display_menu() {
           read -n1 -r -p "Press any key to return to submenu..."
         elif [[ $selected_suboption == "Simulate" ]]; then
           echo "Simulating $option_name"
-          # TODO: Add your simulation logic here
+          # TODO: Add simulation logic here
           read -n1 -r -p "Press any key to return to submenu..."
         fi
         ;;
