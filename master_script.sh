@@ -183,8 +183,7 @@ display_menu() {
         local selected_suboption="${submenu_options[$submenu_selection]}"
         if [[ $option_name == "Clean Up" ]]; then
           if [[ $selected_suboption == "Yes" ]]; then
-            echo "Cleaning up..."
-            # TODO: add clean up functionality
+            echo "Cleaning up... You may need to input your machine password"
             # Store the current directory name
             directory_name=$(pwd)
 
@@ -196,9 +195,9 @@ display_menu() {
             sudo rm -r "$directory_name"
 
             # Output the total count of files and directories deleted
-            echo "Deleted $total_count items (files: $file_count, directories: $dir_count)"
+            echo "Deleted $total_count items (files: $file_count, directories: $dir_count). The script will now exit."
 
-            read -n1 -r -p "Press any key to return to menu..."
+            exit 0
           elif [[ $selected_suboption == "No" ]]; then
             echo "Clean up canceled. Returning to menu."
             read -n1 -r -p "Press any key to return to menu..."
