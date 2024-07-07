@@ -183,6 +183,8 @@ display_menu() {
         local selected_suboption="${submenu_options[$submenu_selection]}"
         if [[ $option_name == "Clean Up" ]]; then
           if [[ $selected_suboption == "Yes" ]]; then
+            clear
+            echo -e "$TITLE"
             echo "Cleaning up... You may need to input your machine password"
             # Store the current directory name
             directory_name=$(pwd)
