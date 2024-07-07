@@ -193,7 +193,7 @@ display_menu() {
             dir_count=$(find "$directory_name" -type d | wc -l)
             total_count=$((file_count + dir_count))
             cd ..
-            rm -r "$directory_name"
+            sudo rm -r "$directory_name"
 
             # Output the total count of files and directories deleted
             echo "Deleted $total_count items (files: $file_count, directories: $dir_count)"
