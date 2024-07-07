@@ -185,7 +185,7 @@ display_menu() {
           if [[ $selected_suboption == "Yes" ]]; then
             clear
             echo -e "$TITLE"
-            echo "Cleaning up... You may need to input your machine password"
+            echo "Cleaning up... You may need to input your machine password."
             # Store the current directory name
             directory_name=$(pwd)
 
@@ -197,7 +197,8 @@ display_menu() {
             sudo rm -r "$directory_name"
 
             # Output the total count of files and directories deleted
-            echo "Deleted $total_count items (files: $file_count, directories: $dir_count). The script will now exit."
+            echo "Deleted $total_count items (files: $file_count, directories: $dir_count)."
+            echo "The script will now exit."
 
             exit 0
           elif [[ $selected_suboption == "No" ]]; then
