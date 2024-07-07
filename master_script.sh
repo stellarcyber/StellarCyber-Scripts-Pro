@@ -19,37 +19,36 @@ if ! command -v jq &>/dev/null; then
   read -p "jq is a required dependency that is currently not installed on your machine. Would you like to install it? (y/n): " choice
   if [ "$choice" == "y" ]; then
     case "$(uname -s)" in
-      Linux)
-        sudo apt-get update
-        if [ $? -ne 0 ]; then
-          echo "Failed to update package list. Please check your network connection and try again."
-          exit 1
-        fi
-        sudo apt-get install -y jq
-        if [ $? -ne 0 ]; then
-          echo "Failed to install jq. Please try installing jq manually."
-          exit 1
-        fi
-        ;;
-      Darwin)
-        brew install jq
-        if [ $? -ne 0 ]; then
-          echo "Failed to install jq using Homebrew. Please try installing jq manually."
-          exit 1
-        fi
-        ;;
-      *)
-        echo "Unsupported OS. The script only supports Linux and Darwin environments. Please install jq manually from https://jqlang.github.io/jq/."
-        echo "For Windows environments, use 'winget install jqlang.jq' to install jq."
+    Linux)
+      sudo apt-get update
+      if [ $? -ne 0 ]; then
+        echo "Failed to update package list. Please check your network connection and try again."
         exit 1
-        ;;
+      fi
+      sudo apt-get install -y jq
+      if [ $? -ne 0 ]; then
+        echo "Failed to install jq. Please try installing jq manually."
+        exit 1
+      fi
+      ;;
+    Darwin)
+      brew install jq
+      if [ $? -ne 0 ]; then
+        echo "Failed to install jq using Homebrew. Please try installing jq manually."
+        exit 1
+      fi
+      ;;
+    *)
+      echo "Unsupported OS. The script only supports Linux and Darwin environments. Please install jq manually from https://jqlang.github.io/jq/."
+      echo "For Windows environments, use 'winget install jqlang.jq' to install jq."
+      exit 1
+      ;;
     esac
   else
     echo "jq is not installed. Please install jq before running the script. This script will now exit."
     exit 1
   fi
 fi
-
 
 # TODO: implement version check and prompt user to install latest version. if on latest version, display version number under title
 
@@ -186,6 +185,18 @@ display_menu() {
           if [[ $selected_suboption == "Yes" ]]; then
             echo "Cleaning up..."
             # TODO: add clean up functionality
+            # Store the current directory name
+            directory_name=$(pwd)
+
+            # Count the number of files and directories in the current directory
+            file_count=$(find "$directory_name" -type f | wc -l)
+            dir_count=$(find "$directory_name" -type d | wc -l)
+            total_count=$((file_count + dir_count))
+            cd ..
+            rm -r "$directory_name"
+
+            # Output the total count of files and directories deleted
+            echo "Deleted $total_count items (files: $file_count, directories: $dir_count)"
 
             read -n1 -r -p "Press any key to return to menu..."
           elif [[ $selected_suboption == "No" ]]; then
