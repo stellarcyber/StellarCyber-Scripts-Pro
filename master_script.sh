@@ -39,7 +39,7 @@ if ! command -v jq &>/dev/null; then
       fi
       ;;
     *)
-      echo "Unsupported OS. The script only supports Linux and Darwin environments. Please install jq manually from https://jqlang.github.io/jq/."
+      echo "Unsupported OS. The auto-installer only supports Linux and Darwin environments. Please install jq manually from https://jqlang.github.io/jq/."
       echo "For Windows environments, use 'winget install jqlang.jq' to install jq."
       exit 1
       ;;
