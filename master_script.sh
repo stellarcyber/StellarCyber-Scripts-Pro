@@ -212,6 +212,12 @@ display_menu() {
           break
         elif [[ $selected_suboption == "Run" ]]; then
           download_if_script_missing "$option_name"
+
+          # TODO: Add check for bash or python script and run accordingly
+          
+
+
+
           "./tools/${option_name}.sh"
           read -n1 -r -p "Press any key to return to submenu..."
         elif [[ $selected_suboption == "Help" ]]; then
@@ -222,7 +228,12 @@ display_menu() {
           read -n1 -r -p "Press any key to return to submenu..."
         elif [[ $selected_suboption == "Simulate" ]]; then
           echo "Simulating $option_name"
+
           # TODO: Add simulation logic here
+
+
+
+
           read -n1 -r -p "Press any key to return to submenu..."
         fi
         ;;
