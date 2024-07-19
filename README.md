@@ -2,6 +2,10 @@
 
 StellarCyber-Scripts-Pro is a CLI-based menu interface with dynamic options loaded from a `config.json` file. It allows users to navigate through a menu structure, execute scripts, simulate actions, and display help information. It is the upgraded version of the basic [StellarCyber-Scripts](https://github.com/ash14545/StellarCyber-Scripts) project.
 
+## To do
+
+* **v2**: Manual (soon automatic) checks if user is on sensors, dp, etc. After selection, provide options accordingly.
+
 ## Features
 
 * **Dynamic Menu**: Options are read from `config.json` using `jq` and display dynamically in a horizontal menu format.
