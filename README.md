@@ -48,7 +48,7 @@ Follow the on-screen instructions to navigate through the menu options, download
 
 ## Configuration
 
-##### TODO: add a bit more information on how to configure/add new scripts. maybe don't add a check for script urls so people can upload their own scripts into the tools directory and have it work from there.
+##### TODO: add a bit more information on how to configure/add new scripts. maybe don't add a check for script urls so people can upload their own scripts into the tools directory and have it work from there (only for local use. global use will require uploading to repo with url).
 
 * **config.json**: Contains options and URLs for downloading scripts. Modify this file to add new scripts or update existing ones.
 
