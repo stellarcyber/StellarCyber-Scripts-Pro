@@ -26,7 +26,7 @@ Please ensure that you are running in a **Linux environment**. Windows users can
 1. Clone the repository
 
 ```bash
-git clone https://github.com/ash14545/StellarCyber-Scripts-Pro.git
+git clone https://github.com/stellarcyber/StellarCyber-Scripts-Pro.git
 cd StellarCyber-Scripts-Pro
 ```
 
@@ -47,6 +47,8 @@ Run the main script to start the interactive menu:
 Follow the on-screen instructions to navigate through the menu options, download scripts, and perform tasks.
 
 ## Configuration
+
+##### TODO: add a bit more information on how to configure/add new scripts. maybe don't add a check for script urls so people can upload their own scripts into the tools directory and have it work from there.
 
 * **config.json**: Contains options and URLs for downloading scripts. Modify this file to add new scripts or update existing ones.
 
