@@ -1,0 +1,106 @@
+Example Implementation
+Service Detection Function:
+
+bash
+Copy code
+detect_services() {
+  local services=()
+
+  # Example checks for different services
+  if command -v apache2 &>/dev/null; then
+    services+=("Apache")
+  fi
+
+  if command -v mysql &>/dev/null; then
+    services+=("MySQL")
+  fi
+
+  if command -v docker &>/dev/null; then
+    services+=("Docker")
+  fi
+
+  # Save detected services to a file or variable
+  echo "${services[@]}" > detected_services.txt
+}
+Dynamic Menu Generation:
+
+bash
+Copy code
+generate_dynamic_menus() {
+  local detected_services
+  IFS=' ' read -r -a detected_services < detected_services.txt
+
+  top_menu_options=()
+  submenu_options_map=()
+
+  for service in "${detected_services[@]}"; do
+    top_menu_options+=("$service Menu")
+
+    case $service in
+      "Apache")
+        submenu_options_map["$service Menu"]=("Start Apache" "Stop Apache" "Restart Apache" "Status Apache")
+        ;;
+      "MySQL")
+        submenu_options_map["$service Menu"]=("Start MySQL" "Stop MySQL" "Restart MySQL" "Status MySQL")
+        ;;
+      "Docker")
+        submenu_options_map["$service Menu"]=("Start Docker" "Stop Docker" "Restart Docker" "Status Docker")
+        ;;
+    esac
+  done
+
+  top_menu_options+=("Quit")
+}
+Integration with Main Script:
+
+bash
+Copy code
+# Call the service detection function at the beginning
+detect_services
+
+# Generate dynamic menus based on detected services
+generate_dynamic_menus
+
+# Function to display top menu
+display_top_menu() {
+  local top_menu_title="Top Menu"
+  display_menu "$top_menu_title" "${top_menu_options[@]}"
+}
+
+# Function to display submenu
+display_submenu() {
+  local submenu_title="$1"
+  shift
+  local submenu_options=("$@")
+  display_menu "$submenu_title" "${submenu_options[@]}"
+}
+
+# Function to handle menu navigation
+handle_menu_navigation() {
+  local selection
+  local menu_level="top"  # Tracks current menu level: "top" or "submenu"
+
+  while true; do
+    if [[ $menu_level == "top" ]]; then
+      display_top_menu
+      selection=$(get_user_selection "${top_menu_options[@]}")
+      if [[ $selection == "Quit" ]]; then
+        exit 0
+      else
+        menu_level="submenu"
+        current_submenu_options=("${submenu_options_map[$selection]}")
+      fi
+    else
+      display_submenu "$selection" "${current_submenu_options[@]}"
+      selection=$(get_user_selection "${current_submenu_options[@]}")
+      if [[ $selection == "Back" ]]; then
+        menu_level="top"
+      else
+        execute_option "$selection"
+      fi
+    fi
+  done
+}
+
+# Start menu navigation
+handle_menu_navigation
