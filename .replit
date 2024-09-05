@@ -1,0 +1,8 @@
+modules = ["bash"]
+run = "./master_script.sh"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "./master_script.sh"]
