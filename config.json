@@ -12,6 +12,11 @@
       "name": "Subtraction",
       "description": "Subtract 2 numbers",
       "gist_URL": "https://gist.githubusercontent.com/ash14545/b058ac710ba5216d32daba2ae38fde63/raw/9f1fe0c55bb147abd7fe30303519079c64b327b0/option2.sh"
+    },
+        {
+      "name": "Vuln Check",
+      "description": "Check for a security vulnerability",
+      "gist_URL": "https://gist.githubusercontent.com/tsanford01/cdde7c066f289e96361a5ec8189c9fab/raw/CVE-2024-6387_vulncheck.sh"
     }
   ]
 }
