@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Check if the configuration file exists
 config_file="config.json"
 if [[ ! -f "$config_file" ]]; then
@@ -71,9 +69,7 @@ read_options_from_config() {
 
     if command -v jq &>/dev/null; then
         # Read option names from config.json using jq
-        while IFS= read -r name; do
-            temp_options+=("$name")
-        done < <(jq -r '.options[].name' "$config_file")
+        mapfile -t temp_options < <(jq -r '.options[].name' "$config_file")
     else
         # Use Python to parse JSON and capture output and exit status
         output=$($python_cmd -c "
@@ -94,10 +90,8 @@ except Exception as e:
             exit 1
         fi
 
-        # Read the output into an array, preserving spaces
-        while IFS= read -r line; do
-            temp_options+=("$line")
-        done <<< "$output"
+        # Read the output into an array using mapfile
+        mapfile -t temp_options <<< "$output"
     fi
 
     # Assign to initial_options array
@@ -107,14 +101,16 @@ except Exception as e:
     initial_options+=("Clean Up" "Quit")
 }
 
-# Function to get description from config.json
-get_description() {
+# Function to get a property from config.json for a given option
+get_option_property() {
     local option_name="$1"
+    local property="$2"
+    local value
 
     if command -v jq &>/dev/null; then
-        jq -r --arg name "$option_name" '.options[] | select(.name == $name) | .description' "$config_file"
+        value=$(jq -r --arg name "$option_name" --arg prop "$property" '.options[] | select(.name == $name) | .[$prop]' "$config_file")
     else
-        output=$($python_cmd -c "
+        value=$($python_cmd -c "
 import json
 import sys
 try:
@@ -122,47 +118,50 @@ try:
         data = json.load(f)
     for option in data.get('options', []):
         if option.get('name', '') == '$option_name':
-            print(option.get('description', ''))
+            print(option.get('$property', ''))
             break
 except Exception as e:
     sys.exit(1)
 ")
         if [[ $? -ne 0 ]]; then
-            echo "Error: Failed to parse description for '$option_name' in '$config_file'."
+            echo "Error: Failed to parse '$property' for '$option_name' in '$config_file'."
             exit 1
         fi
-
-        echo "$output"
     fi
+
+    echo "$value"
 }
 
-# Function to check if file exists and download if not
+# Function to get description from config.json
+get_description() {
+    get_option_property "$1" "description"
+}
+
+# Function to download the script and handle script types
 download_if_script_missing() {
     local option_name="$1"
-    local script_path="tools/${option_name}.sh"
     local url
+    local script_type
+    local script_extension
+    local script_path
 
-    if command -v jq &>/dev/null; then
-        url=$(jq -r --arg name "$option_name" '.options[] | select(.name == $name) | .gist_URL' "$config_file")
-    else
-        url=$($python_cmd -c "
-import json
-import sys
-try:
-    with open('$config_file') as f:
-        data = json.load(f)
-    for option in data.get('options', []):
-        if option.get('name', '') == '$option_name':
-            print(option.get('gist_URL', ''))
-            break
-except Exception as e:
-    sys.exit(1)
-")
-        if [[ $? -ne 0 ]]; then
-            echo "Error: Failed to parse gist_URL for '$option_name' in '$config_file'."
+    # Get the gist_URL and script_type from config.json
+    url=$(get_option_property "$option_name" "gist_URL")
+    script_type=$(get_option_property "$option_name" "script_type")
+
+    # Determine the file extension based on script_type
+    case "$script_type" in
+        sh) script_extension="sh" ;;
+        py) script_extension="py" ;;
+        *)
+            echo "Error: Unsupported script type '$script_type' for '$option_name'."
             exit 1
-        fi
-    fi
+            ;;
+    esac
+
+    # Replace spaces in the option name with underscores for the filename
+    sanitized_option_name="${option_name// /_}"
+    script_path="tools/${sanitized_option_name}.${script_extension}"
 
     # Create the tools directory if it doesn't exist
     mkdir -p "tools" || {
@@ -187,6 +186,40 @@ except Exception as e:
             exit 1
         }
     fi
+}
+
+# Function to execute the script with the appropriate interpreter
+execute_script() {
+    local option_name="$1"
+    local script_type
+    local script_extension
+    local script_path
+    local interpreter
+
+    script_type=$(get_option_property "$option_name" "script_type")
+
+    case "$script_type" in
+        sh)
+            script_extension="sh"
+            interpreter="bash"
+            ;;
+        py)
+            script_extension="py"
+            interpreter="$python_cmd"
+            ;;
+        *)
+            echo "Error: Unsupported script type '$script_type' for '$option_name'."
+            exit 1
+            ;;
+    esac
+
+    # Replace spaces in the option name with underscores for the filename
+    sanitized_option_name="${option_name// /_}"
+    script_path="tools/${sanitized_option_name}.${script_extension}"
+
+    # Execute the script using the appropriate interpreter
+    echo "Running '$option_name'..."
+    "$interpreter" "$script_path"
 }
 
 # Function to display the submenu for a selected option
@@ -225,7 +258,7 @@ display_submenu() {
                 case "${submenu_options[$submenu_selection]}" in
                     "Run")
                         download_if_script_missing "$option_name"
-                        "./tools/${option_name}.sh"
+                        execute_script "$option_name"
                         read -n 1 -s -r -p "Press any key to return to submenu..."
                         ;;
                     "Help")
