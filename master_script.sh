@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Check if the configuration file exists
 config_file="config.json"
 if [[ ! -f "$config_file" ]]; then
@@ -5,15 +7,8 @@ if [[ ! -f "$config_file" ]]; then
     exit 1
 fi
 
-# Check for Python availability
-if command -v python3 &>/dev/null; then
-    python_cmd="python3"
-elif command -v python &>/dev/null; then
-    python_cmd="python"
-else
-    echo "Error: Neither 'python3' nor 'python' is available on your system. Please install Python to proceed."
-    exit 1
-fi
+# Set python_cmd to 'python' explicitly for default
+python_cmd="python"
 
 # ANSI color codes using tput
 if command -v tput &>/dev/null; then
@@ -35,43 +30,13 @@ TITLE=$'\033[1;33m╭━━━╮╭╮\033[0m///\033[1;33m╭╮╭╮\033[0m//
      ///////////////////\033[1;37m╰━━╯\033[0m//
 '
 
-# Function to perform cleanup logic
-cleanup_logic() {
-    clear
-    echo -e "${color_highlight}Warning${color_reset}: This will delete specific files or directories. Do you want to continue? (y/n)"
-    read -r confirm
-    if [[ "$confirm" =~ ^[Yy]$ ]]; then
-        echo "Cleaning up files..."
-
-        # Define the directory to clean up
-        target_dir="./tools"
-
-        # Check if the target directory exists
-        if [[ -d "$target_dir" ]]; then
-            # Delete the directory and its contents
-            rm -rf "$target_dir"
-            echo "Cleanup completed: $target_dir and its contents have been deleted."
-        else
-            echo "Directory $target_dir does not exist. No files were deleted."
-        fi
-
-        # Wait for the user to press any key before returning to the menu
-        read -n 1 -s -r -p "Press any key to return to the menu..."
-    else
-        echo "Cleanup canceled."
-        read -n 1 -s -r -p "Press any key to return to the menu..."
-    fi
-}
-
 # Function to read options from config.json and populate initial_options dynamically
 read_options_from_config() {
     local temp_options=()
 
     if command -v jq &>/dev/null; then
-        # Read option names from config.json using jq
         mapfile -t temp_options < <(jq -r '.options[].name' "$config_file")
     else
-        # Use Python to parse JSON and capture output and exit status
         output=$($python_cmd -c "
 import json
 import sys
@@ -82,7 +47,7 @@ try:
         name = option.get('name', '')
         if name:
             print(name)
-except Exception as e:
+except Exception:
     sys.exit(1)
 ")
         if [[ $? -ne 0 ]]; then
@@ -90,11 +55,9 @@ except Exception as e:
             exit 1
         fi
 
-        # Read the output into an array using mapfile
         mapfile -t temp_options <<< "$output"
     fi
 
-    # Assign to initial_options array
     initial_options=("${temp_options[@]}")
 
     # Append additional options like "Clean Up" and "Quit"
@@ -120,7 +83,7 @@ try:
         if option.get('name', '') == '$option_name':
             print(option.get('$property', ''))
             break
-except Exception as e:
+except Exception:
     sys.exit(1)
 ")
         if [[ $? -ne 0 ]]; then
@@ -137,7 +100,7 @@ get_description() {
     get_option_property "$1" "description"
 }
 
-# Function to download the script and handle script types
+# Function to check if file exists and download if not
 download_if_script_missing() {
     local option_name="$1"
     local url
@@ -176,15 +139,17 @@ download_if_script_missing() {
     fi
 
     # Proceed to download script
-    echo "Downloading script for '$option_name'..."
-    if ! curl -s -f -L "$url" -o "$script_path"; then
-        echo "Error: Failed to download script '$option_name' from $url. Please ensure the URL is valid." >&2
-        exit 1
-    else
-        chmod +x "$script_path" || {
-            echo "Error: Unable to make '$script_path' executable." >&2
+    if [[ ! -f "$script_path" ]]; then
+        echo "Downloading script for '$option_name'..."
+        if ! curl -s -f -L "$url" -o "$script_path"; then
+            echo "Error: Failed to download script '$option_name' from $url. Please ensure the URL is valid." >&2
             exit 1
-        }
+        else
+            chmod +x "$script_path" || {
+                echo "Error: Unable to make '$script_path' executable." >&2
+                exit 1
+            }
+        fi
     fi
 }
 
@@ -197,15 +162,16 @@ execute_script() {
     local interpreter
 
     script_type=$(get_option_property "$option_name" "script_type")
+    interpreter=$(get_option_property "$option_name" "interpreter")
 
     case "$script_type" in
         sh)
             script_extension="sh"
-            interpreter="bash"
+            interpreter="${interpreter:-bash}"
             ;;
         py)
             script_extension="py"
-            interpreter="$python_cmd"
+            interpreter="${interpreter:-$python_cmd}"
             ;;
         *)
             echo "Error: Unsupported script type '$script_type' for '$option_name'."
@@ -217,7 +183,7 @@ execute_script() {
     sanitized_option_name="${option_name// /_}"
     script_path="tools/${sanitized_option_name}.${script_extension}"
 
-    # Execute the script using the appropriate interpreter
+    # Execute the script using the specified interpreter
     echo "Running '$option_name'..."
     "$interpreter" "$script_path"
 }
@@ -322,7 +288,7 @@ display_menu() {
                         ;;
                     "Clean Up")
                         echo "Performing Clean Up..."
-                        cleanup_logic  # Perform cleanup
+                        # Implement your cleanup_logic function or code here
                         ;;
                     *)
                         display_submenu "${options[$selection]}"  # Display submenu for the selected option
