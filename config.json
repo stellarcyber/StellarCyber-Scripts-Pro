@@ -17,6 +17,11 @@
       "name": "Vuln Check",
       "description": "Check for a security vulnerability",
       "gist_URL": "https://gist.githubusercontent.com/tsanford01/cdde7c066f289e96361a5ec8189c9fab/raw/CVE-2024-6387_vulncheck.sh"
+    },
+        {
+      "name": "Mongo Menu",
+      "description": "A tool to navigate and update MongoDB",
+      "gist_URL": "https://gist.githubusercontent.com/tsanford01/446b302b7cd842a1d2a02337ae3cf6b8/raw/3fd69b06b40bf3bbcdebbd61d44f807ec12f6cda/mongo_menus.py"
     }
   ]
 }
