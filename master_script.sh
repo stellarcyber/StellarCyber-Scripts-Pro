@@ -29,7 +29,33 @@ TITLE=$'\033[1;33m╭━━━╮╭╮\033[0m///\033[1;33m╭╮╭╮\033[0m//
 \033[0m////////////////////////\033[1;37m╭━╯┃\033[0m///////
      ///////////////////\033[1;37m╰━━╯\033[0m//
 '
+# Function to perform cleanup logic
+cleanup_logic() {
+    clear
+    echo -e "${color_highlight}Warning${color_reset}: This will delete specific files or directories. Do you want to continue? (y/n)"
+    read -r confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        echo "Cleaning up files..."
 
+        # Define the directory to clean up
+        target_dir="./tools"
+
+        # Check if the target directory exists
+        if [[ -d "$target_dir" ]]; then
+            # Delete the directory and its contents
+            rm -rf "$target_dir"
+            echo "Cleanup completed: $target_dir and its contents have been deleted."
+        else
+            echo "Directory $target_dir does not exist. No files were deleted."
+        fi
+
+        # Wait for the user to press any key before returning to the menu
+        read -n 1 -s -r -p "Press any key to return to the menu..."
+    else
+        echo "Cleanup canceled."
+        read -n 1 -s -r -p "Press any key to return to the menu..."
+    fi
+}
 # Function to read options from config.json and populate initial_options dynamically
 read_options_from_config() {
     local temp_options=()
@@ -288,7 +314,7 @@ display_menu() {
                         ;;
                     "Clean Up")
                         echo "Performing Clean Up..."
-                        # Implement your cleanup_logic function or code here
+                        cleanup_logic # Implement your cleanup_logic function or code here
                         ;;
                     *)
                         display_submenu "${options[$selection]}"  # Display submenu for the selected option
