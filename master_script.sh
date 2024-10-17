@@ -8,7 +8,7 @@ if [[ ! -f "$config_file" ]]; then
 fi
 
 # Set python_cmd to 'python' explicitly for default
-python_cmd="python"
+python_cmd="python3"
 
 # ANSI color codes using tput
 if command -v tput &>/dev/null; then
